@@ -1,0 +1,17 @@
+{
+  "daerah": "Kabupaten Jepara",
+  "diperbarui": "2026-11-05",
+  "catatan": "Tambahkan satu baris tahun baru di 'umk' setiap UMK baru ditetapkan (biasanya Desember). Website otomatis memakai UMK sesuai tahun berjalan; jika tahun berjalan belum ada, dipakai tahun terbaru yang tersedia.",
+  "umk": {
+    "2022": 2108401,
+    "2023": 2272626,
+    "2024": 2450915,
+    "2025": 2610224,
+    "2026": 2756501
+  },
+  "bpjs": {
+    "kesehatanBatasUpah": 12000000,
+    "jpBatasUpah": 11086300,
+    "catatan": "Batas upah JP disesuaikan setiap Maret. Periksa kembali di bpjsketenagakerjaan.go.id."
+  }
+}

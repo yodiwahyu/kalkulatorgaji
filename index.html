@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Simulasi Gaji & Lembur Jepara</title>
+  <meta name="description" content="Simulasi gaji, lembur, potongan BPJS, IPC dan absensi. Gaji pokok otomatis UMK Jepara.">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <h1>Simulasi Gaji &amp; Lembur</h1>
+    <p>Hitung gaji bersih, lembur, BPJS, IPC dan potongan absensi. Semua hitungan berjalan di browser Anda; tidak ada data yang dikirim ke server.</p>
+  </div>
+</header>
+
+<main class="wrap layout">
+  <div class="forms">
+
+    <section class="card">
+      <h2>1. Gaji &amp; Tunjangan</h2>
+      <div class="grid2">
+        <label class="field">
+          <span>Gaji pokok (Rp)</span>
+          <input id="gajiPokok" class="money" inputmode="numeric" autocomplete="off">
+          <small id="umkHint" class="hint"></small>
+        </label>
+        <label class="field">
+          <span>Tahun UMK</span>
+          <select id="umkYear"></select>
+          <small id="umkNote" class="hint"></small>
+        </label>
+        <label class="field"><span>Tunjangan tetap (Rp)</span><input id="tunjanganTetap" class="money" inputmode="numeric" placeholder="0"></label>
+        <label class="field"><span>Tunjangan tidak tetap (Rp)</span><input id="tunjanganTidakTetap" class="money" inputmode="numeric" placeholder="0"></label>
+        <label class="field"><span>Uang makan/transport per hari masuk (Rp)</span><input id="tunjanganHarian" class="money" inputmode="numeric" placeholder="0"></label>
+        <label class="field"><span>Bonus / insentif / premi (Rp)</span><input id="bonus" class="money" inputmode="numeric" placeholder="0"></label>
+      </div>
+      <button type="button" class="link" id="useUmk">Kosongkan gaji pokok → pakai UMK otomatis</button>
+    </section>
+
+    <section class="card">
+      <h2>2. Lembur</h2>
+      <div id="lemburRows" class="rows"></div>
+      <button type="button" class="btn ghost" id="addLembur">+ Tambah baris lembur</button>
+      <p class="hint">Satu baris = jenis hari + durasi lembur per hari + berapa hari. Contoh: Hari kerja, 2 jam, 10 hari.</p>
+      <div class="quick">
+        <h3>Tabel tarif lembur per durasi (per hari)</h3>
+        <div id="quickTable"></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>3. Kehadiran &amp; Potongan</h2>
+      <div class="grid2">
+        <label class="field"><span>Hari kerja dalam sebulan</span><input id="hariKerjaBulan" type="number" min="1" max="31" step="1"></label>
+        <label class="field"><span>Alpa (hari)</span><input id="alpa" type="number" min="0" step="0.5" placeholder="0"></label>
+        <label class="field"><span>Izin / cuti tanpa upah (hari)</span><input id="izin" type="number" min="0" step="0.5" placeholder="0"></label>
+      </div>
+
+      <fieldset>
+        <legend>Terlambat</legend>
+        <div class="grid2">
+          <label class="field"><span>Metode</span>
+            <select id="terlambatMode">
+              <option value="menit">Per menit (proporsional upah per jam)</option>
+              <option value="kali">Nominal tetap per kali</option>
+            </select>
+          </label>
+          <label class="field" data-show="terlambatMode=menit"><span>Total menit terlambat</span><input id="terlambatMenit" type="number" min="0" placeholder="0"></label>
+          <label class="field" data-show="terlambatMode=kali"><span>Jumlah kali</span><input id="terlambatKali" type="number" min="0" placeholder="0"></label>
+          <label class="field" data-show="terlambatMode=kali"><span>Potongan per kali (Rp)</span><input id="terlambatNominal" class="money" inputmode="numeric" placeholder="0"></label>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>IPC (Izin Pulang Cepat)</legend>
+        <div class="grid2">
+          <label class="field"><span>Metode</span>
+            <select id="ipcMode">
+              <option value="jam">Per jam (proporsional upah per jam)</option>
+              <option value="kali">Nominal tetap per kali</option>
+            </select>
+          </label>
+          <label class="field" data-show="ipcMode=jam"><span>Total jam IPC</span><input id="ipcJam" type="number" min="0" step="0.5" placeholder="0"></label>
+          <label class="field" data-show="ipcMode=kali"><span>Jumlah kali IPC</span><input id="ipcKali" type="number" min="0" placeholder="0"></label>
+          <label class="field" data-show="ipcMode=kali"><span>Potongan per kali (Rp)</span><input id="ipcNominal" class="money" inputmode="numeric" placeholder="0"></label>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>BPJS (porsi karyawan)</legend>
+        <div class="checks">
+          <label><input type="checkbox" id="kesOn" checked> Kesehatan 1%</label>
+          <label><input type="checkbox" id="jhtOn" checked> JHT 2%</label>
+          <label><input type="checkbox" id="jpOn" checked> JP 1%</label>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Potongan lain (kasbon, koperasi, dll.)</legend>
+        <div id="otherRows" class="rows"></div>
+        <button type="button" class="btn ghost" id="addOther">+ Tambah potongan</button>
+      </fieldset>
+    </section>
+
+    <details class="card adv">
+      <summary><h2>4. Pengaturan lanjutan</h2></summary>
+      <div class="grid2">
+        <label class="field"><span>Sistem hari kerja</span>
+          <select id="hariSistem"><option value="5">5 hari kerja (Sabtu–Minggu libur) · 21 hari</option><option value="6">6 hari kerja · 25 hari</option></select>
+        </label>
+        <label class="field"><span>Pembagi upah per jam</span><input id="divisor" type="number" min="1" step="1"><small class="hint">Standar 173 (1/173 upah sebulan).</small></label>
+        <label class="field"><span>Dasar lembur &amp; potongan jam/hari</span>
+          <select id="waktuBasis"><option value="pokok+tetap">Gaji pokok + tunjangan tetap</option><option value="pokok">Gaji pokok saja</option></select>
+        </label>
+        <label class="field"><span>Dasar iuran BPJS</span>
+          <select id="bpjsBasis"><option value="pokok+tetap">Gaji pokok + tunjangan tetap</option><option value="pokok">Gaji pokok saja</option></select>
+        </label>
+        <label class="field"><span>Batas upah BPJS Kesehatan (Rp)</span><input id="capKes" class="money" inputmode="numeric"></label>
+        <label class="field"><span>Batas upah JP (Rp)</span><input id="capJp" class="money" inputmode="numeric"></label>
+      </div>
+      <h3>Pengali lembur</h3>
+      <p class="hint">Default mengikuti Kepmenaker 102/2004. Ubah bila aturan perusahaan berbeda.</p>
+      <div class="grid3" id="multGrid"></div>
+      <button type="button" class="link" id="resetMult">Kembalikan pengali ke aturan standar</button>
+    </details>
+  </div>
+
+  <aside class="result">
+    <div class="card sticky">
+      <div class="net">
+        <span>Estimasi gaji bersih</span>
+        <strong id="netPay">Rp 0</strong>
+        <small id="netSub"></small>
+      </div>
+      <div id="breakdown"></div>
+      <div class="actions">
+        <button type="button" class="btn" id="copyBtn">Salin ringkasan</button>
+        <button type="button" class="btn ghost" id="printBtn">Cetak / PDF</button>
+        <button type="button" class="btn ghost" id="resetBtn">Reset semua</button>
+      </div>
+      <p class="hint">Simulasi saja, bukan slip gaji resmi. PPh 21 tidak dihitung. Gaji di sekitar UMK umumnya di bawah PTKP.</p>
+    </div>
+  </aside>
+</main>
+
+<footer class="wrap foot">
+  <p id="dataInfo"></p>
+</footer>
+
+<script src="calc.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
